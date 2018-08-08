@@ -132,7 +132,7 @@
             this%iter = iter
          end if
          
-         call str(this%iter,chiter,8)
+         write (chiter,'(I8.8)') this%iter
          this%chiter = trim(chiter)
           
          if (present(base)) then
@@ -862,36 +862,6 @@
          call h5close_f(ierr)
 
       end subroutine pwpart_const
-!
-      subroutine str(int_in,string,ndigits)
-
-      implicit none
-      integer, intent(in) :: int_in, ndigits
-      character(len=*), intent(inout) :: string
-      
-! local variables      
-      integer  ::  izero, i, nd, m
-      character(len=20)  :: chindx 
-      
-      m = 1 
-      izero =  ichar('0')
-      if (ndigits > 20) then 
-         nd = 20
-      else
-         nd = ndigits
-      endif
-      if (nd > len(string)) then 
-         nd = len(string)
-      endif
-
-      chindx = ''
-      do i = nd, 1, -1 
-         m = 10**(i-1)
-         chindx = trim(chindx) // char(  izero + mod( int_in/m , 10 ) ) 
-      enddo 
-      string = trim(chindx)
-
-      end subroutine str    
 !
       function detect_precision()
          integer(hid_t) :: detect_precision
