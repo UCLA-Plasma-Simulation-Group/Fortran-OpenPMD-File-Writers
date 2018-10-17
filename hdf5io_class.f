@@ -11,7 +11,7 @@
       
       private
       
-      public :: hdf5file, pwfield, pwpart
+      public :: hdf5file, pwfield, pwpart, prfield
       
       integer, parameter :: dp = kind(1.d0)
 
@@ -68,6 +68,11 @@
          module procedure add_h5_atribute_v1_double         
       end interface
       
+      interface prfield
+        module procedure prfield_3d
+        module procedure prfield_2d
+      end interface
+
       interface pwfield
         module procedure pwfield_2d
         module procedure pwfield_3d
@@ -570,6 +575,87 @@
                
       end subroutine pwfield_3d
 !
+      subroutine prfield_3d(pp,file,fd,gs,ls,noff,ierr)
+
+         implicit none
+        
+         class(parallel), intent(in), pointer :: pp
+         class(hdf5file), intent(in) :: file
+         real, dimension(:,:,:), intent(inout) :: fd
+         integer, dimension(3), intent(in) :: gs, ls
+         integer, dimension(3), intent(in) :: noff
+         integer, intent(inout) :: ierr
+! local data
+         integer(hid_t) :: treal,flplID, xferID, dcplID, memspaceID 
+         integer(hid_t) :: file_id, rootID, meshid, dset_id, dspace_id, iterid
+         integer(hsize_t), dimension(3) :: start
+         integer(hsize_t), dimension(3) :: gsize, lsize
+         integer(hsize_t), dimension(3) :: lnoff
+         integer :: info
+         logical :: gexist, fexist
+                  
+         ierr = 0
+         gsize = gs
+         lsize = ls
+         lnoff = noff
+
+         inquire(FILE=trim(file%filename), EXIST=fexist)
+         call MPI_BARRIER(pp%getlworld(),ierr)
+         if(.not. fexist) then
+            write (*,*) "The file does not exist", file%filename
+            call MPI_ABORT(pp%getlworld(),1,ierr)
+            stop
+         end if
+
+         call h5open_f(ierr)
+         treal = detect_precision()
+         call h5pcreate_f(H5P_FILE_ACCESS_F, flplID, ierr)         
+         call h5pcreate_f(H5P_DATASET_CREATE_F, dcplID, ierr)         
+         call h5pcreate_f(H5P_DATASET_XFER_F, xferID, ierr)  
+         info = MPI_INFO_NULL
+         call h5pset_fapl_mpio_f(flplID, pp%getlworld(), info, ierr)
+         call h5pset_dxpl_mpio_f(xferID, H5FD_MPIO_COLLECTIVE_F, ierr)    
+      
+         call h5fopen_f(trim(file%filename),H5F_ACC_RDWR_F,file_id,ierr,&
+         &access_prp=flplID) 
+         call h5screate_simple_f(3, gsize, dspace_id, ierr)
+         call h5screate_simple_f(3, lsize, memspaceID, ierr)
+         call h5gopen_f(file_id, '/', rootID, ierr)
+         call h5gopen_f(rootID, trim(file%base)//trim(file%chiter), iterid, ierr)
+         call h5lexists_f(iterid, trim(file%meshesPath), gexist, ierr)
+         if (gexist) then
+            call h5gopen_f(iterid, trim(file%meshesPath), meshid, ierr)
+         else
+            write (*,*) "The mesh path does not exist", file%meshesPath
+            call MPI_ABORT(pp%getlworld(),1,ierr)
+            stop
+         end if
+         call h5dopen_f(meshid, trim(file%records), dset_id, ierr, H5P_DEFAULT_F)
+
+         start(1) = lnoff(1)
+         start(2) = lnoff(2)
+         start(3) = lnoff(3)
+   
+         call h5sselect_hyperslab_f(dspace_id, H5S_SELECT_SET_F, start, lsize,&
+         &ierr)
+
+         call h5dread_f(dset_id, treal, fd(1:lsize(1),1:lsize(2),1:lsize(3)),&
+         &lsize, ierr, memspaceID, dspace_id, xfer_prp=xferID)
+
+         call h5sclose_f(memspaceID, ierr)
+         call h5sclose_f(dspace_id, ierr)
+         call h5pclose_f(xferID, ierr)
+         call h5pclose_f(dcplID, ierr)
+         call h5pclose_f(flplID, ierr)
+         call h5gclose_f(rootID, ierr)
+         call h5dclose_f(dset_id, ierr)
+         call h5gclose_f(meshid, ierr)
+         call h5gclose_f(iterid, ierr)
+         call h5fclose_f(file_id, ierr)
+         call h5close_f(ierr)
+               
+      end subroutine prfield_3d
+!
       subroutine pwfield_2d(pp,file,fd,gs,ls,noff,ierr)
 
          implicit none
@@ -654,6 +740,86 @@
          call h5close_f(ierr)
                
       end subroutine pwfield_2d
+!
+      subroutine prfield_2d(pp,file,fd,gs,ls,noff,ierr)
+
+         implicit none
+        
+         class(parallel), intent(in), pointer :: pp
+         class(hdf5file), intent(in) :: file
+         real, dimension(:,:), intent(inout) :: fd
+         integer, dimension(2), intent(in) :: gs, ls
+         integer, dimension(2), intent(in) :: noff
+         integer, intent(inout) :: ierr
+! local data
+         integer(hid_t) :: treal,flplID, xferID, dcplID, memspaceID
+         integer(hid_t) :: file_id, rootID, meshid, dset_id, dspace_id, iterid
+         integer(hsize_t), dimension(2) :: start
+         integer(hsize_t), dimension(2) :: gsize, lsize
+         integer(hsize_t), dimension(2) :: lnoff
+         integer :: info
+         logical :: gexist, fexist
+                  
+         ierr = 0
+         gsize = gs
+         lsize = ls
+         lnoff = noff
+
+         inquire(FILE=trim(file%filename), EXIST=fexist)
+         call MPI_BARRIER(pp%getlworld(),ierr)
+         if(.not. fexist) then
+            write (*,*) "The file does not exist", file%filename
+            call MPI_ABORT(pp%getlworld(),1,ierr)
+            stop
+         end if
+
+         call h5open_f(ierr)
+         treal = detect_precision()
+         call h5pcreate_f(H5P_FILE_ACCESS_F, flplID, ierr)         
+         call h5pcreate_f(H5P_DATASET_CREATE_F, dcplID, ierr)         
+         call h5pcreate_f(H5P_DATASET_XFER_F, xferID, ierr)  
+         info = MPI_INFO_NULL
+         call h5pset_fapl_mpio_f(flplID, pp%getlworld(), info, ierr)
+         call h5pset_dxpl_mpio_f(xferID, H5FD_MPIO_COLLECTIVE_F, ierr)    
+      
+         call h5fopen_f(trim(file%filename),H5F_ACC_RDWR_F,file_id,ierr,&
+         &access_prp=flplID) 
+         call h5screate_simple_f(2, gsize, dspace_id, ierr)
+         call h5screate_simple_f(2, lsize, memspaceID, ierr)
+         call h5gopen_f(file_id, '/', rootID, ierr)
+         call h5gopen_f(rootID, trim(file%base)//trim(file%chiter), iterid, ierr)
+         call h5lexists_f(iterid, trim(file%meshesPath), gexist, ierr)
+         if (gexist) then
+            call h5gopen_f(iterid, trim(file%meshesPath), meshid, ierr)
+         else
+            write (*,*) "The mesh path does not exist", file%meshesPath
+            call MPI_ABORT(pp%getlworld(),1,ierr)
+            stop
+         end if
+         call h5dopen_f(meshid, trim(file%records), dset_id, ierr, H5P_DEFAULT_F)
+
+         start(1) = lnoff(1)
+         start(2) = lnoff(2)
+   
+         call h5sselect_hyperslab_f(dspace_id, H5S_SELECT_SET_F, start, lsize,&
+         &ierr)
+
+         call h5dread_f(dset_id, treal, fd(1:lsize(1),1:lsize(2)),&
+         &lsize, ierr, memspaceID, dspace_id, xfer_prp=xferID)
+
+         call h5sclose_f(memspaceID, ierr)
+         call h5sclose_f(dspace_id, ierr)
+         call h5pclose_f(xferID, ierr)
+         call h5pclose_f(dcplID, ierr)
+         call h5pclose_f(flplID, ierr)
+         call h5gclose_f(rootID, ierr)
+         call h5gclose_f(iterID, ierr)
+         call h5dclose_f(dset_id, ierr)
+         call h5gclose_f(meshid, ierr)
+         call h5fclose_f(file_id, ierr)
+         call h5close_f(ierr)
+               
+      end subroutine prfield_2d
 !
       subroutine pwpart_array(pp,file,part,npp,ierr)
      

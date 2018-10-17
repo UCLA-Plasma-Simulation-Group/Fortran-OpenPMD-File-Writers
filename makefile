@@ -1,6 +1,6 @@
 # name of the compiler 
 FC = mpif90 -fopenmp -O3
-CC = gcc
+CC = mpicc
 LINKER = mpif90 -fopenmp
 
 # compiler options

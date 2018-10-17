@@ -9,8 +9,8 @@
       type(parallel),target :: p
       class(parallel), pointer :: pp => null()
       type(hdf5file) :: file
-      real, dimension(:,:), allocatable :: arr
-      real, dimension(:,:,:), allocatable :: arr3d
+      real, dimension(:,:), allocatable :: arr, arr_r
+      real, dimension(:,:,:), allocatable :: arr3d, arr3d_r
       real, dimension(:,:), allocatable :: part
       integer :: nx = 256, ny = 256, nz = 256, noff, nyp
       integer :: i, j, k, ierr = 0
@@ -33,8 +33,8 @@
       noff = pp%getidproc()*nyp
 
 ! Allocate the data array for data output
-      allocate(arr(nx,nyp))
-      allocate(arr3d(nx,nyp,nz))
+      allocate(arr(nx,nyp),arr_r(nx,nyp))
+      allocate(arr3d(nx,nyp,nz),arr3d_r(nx,nyp,nz))
       allocate(part(2,N))
 
 ! Loop for iterations
@@ -59,6 +59,20 @@
 
 ! Write Ex2d   
          call pwfield(pp,file,arr(:,:),(/nx,ny/),(/nx,nyp/),(/0,noff/),ierr)
+! Read Ex2d to arr_r from the file
+         call prfield(pp,file,arr_r(:,:),(/nx,ny/),(/nx,nyp/),(/0,noff/),ierr)
+! Initialize the file data for 2D mesh newEx2d
+         call file%new(iter=iter,&
+                      &axisLabels=(/'x','z'/),&
+                      &gridSpacing=(/1.0,1.0/),&
+                      &gridGlobalOffset=(/0.0d0,0.0d0/),&
+                      &gridUnitSI = 1.0d0, &
+                      &position=(/0.0,0.0/),&
+                      &unitDimension=(/1.d0,1.d0,-3.d0,-1.d0,0.d0,0.d0,0.d0/),&
+                      &records='newEx2d')
+! Write arr_r to newEx2d in the file   
+         call pwfield(pp,file,arr_r(:,:),(/nx,ny/),(/nx,nyp/),(/0,noff/),ierr)
+
          
 ! Initialize the file data for 3D mesh rho3d
          call file%new(iter=iter,&
@@ -82,7 +96,19 @@
 
 ! Write rho3d  
          call pwfield(pp,file,arr3d(:,:,:),(/nx,ny,nz/),(/nx,nyp,nz/),(/0,noff,0/),ierr)
-                  
+! Read rho3d from the file to arr3d_r data array.
+         call prfield(pp,file,arr3d_r(:,:,:),(/nx,ny,nz/),(/nx,nyp,nz/),(/0,noff,0/),ierr)
+! Initialize the file data for 3D mesh newrho3d
+         call file%new(iter=iter,&
+                      &gridUnitSI=1.0d0, &
+                      &axisLabels=(/'x','y','z'/),&
+                      &gridSpacing=(/1.0,1.0,1.0/),&
+                      &gridGlobalOffset=(/0.0d0,0.0d0,0.0d0/),&
+                      &position=(/0.0,0.0,0.0/),&
+                      &unitDimension=(/-3.d0,0.d0,1.d0,1.d0,0.d0,0.d0,0.d0/),&
+                      &records='newrho3d')
+! Write data in arr3d_r into newrho3d in the file
+         call pwfield(pp,file,arr3d_r(:,:,:),(/nx,ny,nz/),(/nx,nyp,nz/),(/0,noff,0/),ierr)
 
 ! Prepare the data for particles
          call random_number(part)
