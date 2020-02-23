@@ -1,5 +1,7 @@
 # name of the compiler 
-FC = mpif90 -fopenmp -O3
+FC = mpif90 -fopenmp -O3 
+#
+# CC = gcc -fdefault-real-8
 CC = gcc
 LINKER = mpif90 -fopenmp
 
@@ -17,8 +19,8 @@ OBJS_MAIN = main.o
 OBJS = ${OBJS_BASE} ${OBJS_MAIN}
 
 # hdf libraries 
-HDF_INCLUDE_PATH = -I/usr/local/hdf5/include -I/usr/local/hdf5/lib -lhdf5hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5
-HDF_LIBPATH = -L/usr/local/hdf5/lib -lhdf5_fortran -lhdf5_hl -lhdf5 -lz
+HDF_INCLUDE_PATH = -I/usr/local/include -I/usr/local/lib -lhdf5hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5
+HDF_LIBPATH = -L/usr/local/lib -lhdf5 -lhdf5_fortran -lhdf5_hl -lhdf5hl_fortran
 HDF_LIBS = ${HDF_LIBPATH} 
 
 OPTS = ${HDF_INCLUDE_PATH}

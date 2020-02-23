@@ -45,6 +45,7 @@
                       &axisLabels=(/'x','z'/),&
                       &gridSpacing=(/1.0,1.0/),&
                       &gridGlobalOffset=(/0.0d0,0.0d0/),&
+                      &gridUnitSI = 1.0d0, &
                       &position=(/0.0,0.0/),&
                       &unitDimension=(/1.d0,1.d0,-3.d0,-1.d0,0.d0,0.d0,0.d0/),&
                       &records='Ex2d')
@@ -61,6 +62,7 @@
          
 ! Initialize the file data for 3D mesh rho3d
          call file%new(iter=iter,&
+                      &gridUnitSI=1.0d0, &
                       &axisLabels=(/'x','y','z'/),&
                       &gridSpacing=(/1.0,1.0,1.0/),&
                       &gridGlobalOffset=(/0.0d0,0.0d0,0.0d0/),&

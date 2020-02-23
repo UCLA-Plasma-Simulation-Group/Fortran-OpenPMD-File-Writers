@@ -168,6 +168,9 @@
 
          if (present(timeUnitSI)) then
             this%timeUnitSI = timeUnitSI
+         else
+            write(*,*) 'timeUnitSI = 1'
+            this%timeUnitSI = 1.0
          end if
 
          if (present(records)) then
@@ -210,6 +213,9 @@
 
          if (present(gridUnitSI)) then
             this%gridUnitSI = gridUnitSI
+         else
+            write(*,*) 'gridUnitSI=1'
+            this%gridUnitSI = 1.0d0
          end if
 
          if (present(position)) then
@@ -224,6 +230,8 @@
 
          if (present(unitSI)) then
             this%unitSI = unitSI
+         else
+            this%unitSI = 1.0d0
          end if
 
          if (present(unitDimension)) then
@@ -503,6 +511,12 @@
          integer(hsize_t), dimension(3) :: lnoff
          integer :: info
          logical :: gexist
+	 
+
+	 real(kind=dp), dimension(3) :: local_zeros=(/ 0.0 , 0.0, 0.0 /)
+    real(kind=dp), dimension(3) :: local_ones =(/ 1.0, 1.0, 1.0 /)
+
+
                   
          ierr = 0
          gsize = gs
@@ -548,12 +562,21 @@
          call add_h5_atribute(dset_id, 'dataOrder', trim(file%dataOrder)) 
          call add_h5_atribute(dset_id, 'geometry', trim(file%geometry)) 
          call add_h5_atribute(dset_id, 'geometryParameters', trim(file%geometryParameters)) 
-         call add_h5_atribute(dset_id, 'gridGlobalOffset', file%gridGlobalOffset) 
          call add_h5_atribute(dset_id, 'gridSpacing', file%gridSpacing) 
          call add_h5_atribute(dset_id, 'gridUnitSI', file%gridUnitSI) 
          call add_h5_atribute(dset_id, 'timeOffset', file%timeOffset) 
          call add_h5_atribute(dset_id, 'unitDimension', file%unitDimension) 
-         call add_h5_atribute(dset_id, 'position', file%position) 
+         if (associated(file%gridGlobalOffset)) then 
+	     call add_h5_atribute(dset_id, 'gridGlobalOffset', file%gridGlobalOffset) 
+	 else
+	     call add_h5_atribute(dset_id, 'gridGlobalOffset', local_zeros )
+	 endif
+         if (associated(file%position)) then 
+	     call add_h5_atribute(dset_id, 'position', file%position) 
+	 else
+	     call add_h5_atribute(dset_id, 'position', local_zeros )
+	 endif
+
          call add_h5_atribute(dset_id, 'unitSI', file%unitSI) 
 
          call h5sclose_f(memspaceID, ierr)
@@ -588,6 +611,8 @@
          integer(hsize_t), dimension(2) :: lnoff
          integer :: info
          logical :: gexist
+	 real(kind=dp), dimension(2) :: local_zeros=(/ 0.0, 0.0 /)
+    real(kind=dp), dimension(2) :: local_ones= (/ 1.0d0 1.0d0  /)
                   
          ierr = 0
          gsize = gs
@@ -632,12 +657,22 @@
          call add_h5_atribute(dset_id, 'dataOrder', trim(file%dataOrder)) 
          call add_h5_atribute(dset_id, 'geometry', trim(file%geometry)) 
          call add_h5_atribute(dset_id, 'geometryParameters', trim(file%geometryParameters)) 
-         call add_h5_atribute(dset_id, 'gridGlobalOffset', file%gridGlobalOffset) 
-         call add_h5_atribute(dset_id, 'gridSpacing', file%gridSpacing) 
+         call add_h5_atribute(dset_id, 'gridSpacing', file%gridSpacing)
+         write(*,*)'gridUnitSI=',file%gridUnitSI
          call add_h5_atribute(dset_id, 'gridUnitSI', file%gridUnitSI) 
          call add_h5_atribute(dset_id, 'timeOffset', file%timeOffset) 
          call add_h5_atribute(dset_id, 'unitDimension', file%unitDimension) 
-         call add_h5_atribute(dset_id, 'position', file%position) 
+         if (associated(file%gridGlobalOffset)) then 
+	     call add_h5_atribute(dset_id, 'gridGlobalOffset', file%gridGlobalOffset) 
+	 else
+	     call add_h5_atribute(dset_id, 'gridGlobalOffset', local_zeros)
+	 endif
+	     
+         if (associated(file%position)) then 
+	     call add_h5_atribute(dset_id, 'position', file%position) 
+	 else
+	     call add_h5_atribute(dset_id, 'position', local_zeros)
+	 endif
          call add_h5_atribute(dset_id, 'unitSI', file%unitSI) 
 
 
