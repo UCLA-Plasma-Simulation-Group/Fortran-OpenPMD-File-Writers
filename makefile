@@ -1,8 +1,7 @@
 # name of the compiler 
-FC = mpif90 -fopenmp -O3 
-#
-# CC = gcc -fdefault-real-8
-CC = gcc
+FC = mpif90 -fopenmp -O3
+# CC = mpicc -fdefault-real-8
+CC = mpicc
 LINKER = mpif90 -fopenmp
 
 # compiler options
