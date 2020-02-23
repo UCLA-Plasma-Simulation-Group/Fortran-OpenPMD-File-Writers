@@ -698,7 +698,7 @@
          integer :: info
          logical :: gexist
 	 real(kind=dp), dimension(2) :: local_zeros=(/ 0.0, 0.0 /)
-    real(kind=dp), dimension(2) :: local_ones= (/ 1.0d0 1.0d0  /)
+    real(kind=dp), dimension(2) :: local_ones= (/ 1.0d0, 1.0d0  /)
                   
          ierr = 0
          gsize = gs
