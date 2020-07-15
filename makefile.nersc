@@ -1,0 +1,45 @@
+# name of the compiler 
+FC = ftn -openmp -O3
+# CC = mpicc -fdefault-real-8
+CC = cc
+LINKER = ftn -openmp
+
+# compiler options
+
+# FORMAT_FREE = -ffree-form
+# FORMAT_FIXED = -ffixed-form
+
+FORMAT_FREE = -free
+FORMAT_FIXED = -fixed
+
+# Objects list
+
+OBJS_BASE = parallel_class.o hdf5io_class.o
+
+OBJS_MAIN = main.o  
+
+OBJS = ${OBJS_BASE} ${OBJS_MAIN}
+
+# hdf libraries 
+HDF_INCLUDE_PATH  =
+HDF_LIBPATH = 
+HDF_LIBS = 
+
+OPTS = ${HDF_INCLUDE_PATH}
+
+# Linkage rule
+main :: ${OBJS} 
+	${LINKER}  ${OBJS} ${HDF_LIBS} -o io.e
+
+clean ::
+	rm *.o *.mod; rm io.e
+
+# Compilation rules
+hdf5io_class.o : hdf5io_class.f parallel_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c hdf5io_class.f -o hdf5io_class.o
+
+parallel_class.o : parallel_class.f
+	${FC} ${OPTS} ${FORMAT_FREE} -c parallel_class.f -o parallel_class.o
+
+main.o : main.f parallel_class.o hdf5io_class.o 
+	${FC} ${OPTS} ${FORMAT_FREE} -c main.f -o main.o
