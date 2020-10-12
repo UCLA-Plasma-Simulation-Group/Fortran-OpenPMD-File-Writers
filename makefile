@@ -18,7 +18,7 @@ OBJS_MAIN = main.o
 OBJS = ${OBJS_BASE} ${OBJS_MAIN}
 
 # hdf libraries 
-HDF_INCLUDE_PATH = -I/usr/local/include -I/usr/local/lib -lhdf5hl_fortran -lhdf5_fortran -lhdf5_hl -lhdf5
+HDF_INCLUDE_PATH = -I/usr/local/include -I/usr/local/lib 
 HDF_LIBPATH = -L/usr/local/lib -lhdf5 -lhdf5_fortran -lhdf5_hl -lhdf5hl_fortran
 HDF_LIBS = ${HDF_LIBPATH} 
 
