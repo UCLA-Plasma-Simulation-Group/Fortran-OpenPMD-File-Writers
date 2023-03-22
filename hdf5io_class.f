@@ -84,7 +84,12 @@
       end interface
       
       contains
-      
+!>   This subroutine initializes the HDF5 file
+!! @param this = hdf5 file handle
+!! @param openPMD = attribute for openPMD, default value is "1.0.0"
+!! @param iter = current timestep
+!! @param filenamebase  = base name for the grid/particle quantity,
+!! such as "e1" "e2" "e3" "b1" "b2" "b3"
       subroutine init_hdf5file(this,openPMD, openPMDextension, iter, base,&
       &basePath, meshesPath, particlesPath, iterationEncoding, iterationFormat,&
       &filenamebase, time, dt, timeUnitSI, records, component, geometry,&
@@ -497,7 +502,17 @@
          call h5close_f(ierr)
 
       end subroutine createfile
-!      
+
+!> pwfield_3d: a subroutine to write 3D grid data
+!! @param pp = the parallel object
+!! @param file = the HDF5 file handle
+!! @param fd = 3d field array
+!! @param gs = global space
+!! @param ls = local space
+!! @param noff(3) = local offset
+!! @param ierr = error code
+!
+
       subroutine pwfield_3d(pp,file,fd,gs,ls,noff,ierr)
 
          implicit none
