@@ -1,4 +1,4 @@
-# name of the compiler 
+#! name of the compiler 
 FC = mpif90 -fopenmp -O3
 # CC = mpicc -fdefault-real-8
 CC = mpicc
@@ -38,12 +38,12 @@ hdf5io_class.o : hdf5io_class.f parallel_class.o
 parallel_class.o : parallel_class.f
 	${FC} ${OPTS} ${FORMAT_FREE} -c parallel_class.f -o parallel_class.o
 
-parallel_pipe_class.o : parallel_class.o parallel_pipe_class.f
-	${FC} ${OPTS} ${FORMAT_FREE} -c parallel_pipe_class.f -o parallel_pipe_class.o
+parallel_pipe_class.o : parallel_class.o parallel_pipe_class.f03
+	${FC} ${OPTS} ${FORMAT_FREE} -c parallel_pipe_class.f03 -o parallel_pipe_class.o
 
 
-hdf5io_pipe_class.o : hdf5io_pipe_class.f parallel_pipe_class.o
-	${FC} ${OPTS} ${FORMAT_FREE} -c hdf5io_class.f -o hdf5io_class.o
+hdf5io_pipe_class.o : hdf5io_pipe_class.f03 parallel_pipe_class.o
+	${FC} ${OPTS} ${FORMAT_FREE} -c hdf5io_pipe_class.f03 -o hdf5io_pipe_class.o
 
-main.o : main.f parallel_class.o hdf5io_class.o parallel_pipe_class.o
+main.o : main.f parallel_class.o hdf5io_class.o parallel_pipe_class.o 
 	${FC} ${OPTS} ${FORMAT_FREE} -c main.f -o main.o

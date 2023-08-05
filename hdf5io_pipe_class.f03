@@ -3,7 +3,6 @@
 
       module hdf5io_class
 
-      use perrors_class
       use parallel_pipe_class
       use HDF5
       use mpi
@@ -536,11 +535,10 @@
       end subroutine wrattr_dataset
 !
 !
-      subroutine pwfield_3d(pp,perr,file,fd,gs,ls,noff,ierr)
+      subroutine pwfield_3d(pp,file,fd,gs,ls,noff,ierr)
 
          implicit none
         
-         class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(hdf5file), intent(in) :: file
          real, dimension(:,:,:), intent(in) :: fd
@@ -671,11 +669,10 @@
                
       end subroutine pwfield_3d
 !
-      subroutine pwfield_2d(pp,perr,file,fd,gs,ls,noff,ierr)
+      subroutine pwfield_2d(pp,file,fd,gs,ls,noff,ierr)
 
          implicit none
         
-         class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(hdf5file), intent(in) :: file
          real, dimension(:,:), intent(in) :: fd
@@ -780,12 +777,11 @@
                
       end subroutine pwfield_2d
 !
-      subroutine pwfield_3d_pipe(pp,perr,file,fd,gs,ls,noff,rtag,&
+      subroutine pwfield_3d_pipe(pp,file,fd,gs,ls,noff,rtag,&
       &stag,id,ierr)
 
          implicit none
         
-         class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(hdf5file), intent(in) :: file
          real, dimension(:,:,:), intent(in) :: fd
@@ -943,12 +939,11 @@
                         
       end subroutine pwfield_3d_pipe
 !
-      subroutine pwfield_2d_pipe(pp,perr,file,fd,gs,ls,noff,rtag,&
+      subroutine pwfield_2d_pipe(pp,file,fd,gs,ls,noff,rtag,&
       &stag,id,ierr)
 
          implicit none
         
-         class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(hdf5file), intent(in) :: file
          real, dimension(:,:), intent(in) :: fd
@@ -1107,12 +1102,11 @@
                         
       end subroutine pwfield_2d_pipe
 !
-      subroutine wfield_2d_pipe(pp,perr,file,fd,gs,ls,noff,rtag,&
+      subroutine wfield_2d_pipe(pp,file,fd,gs,ls,noff,rtag,&
       &stag,id,ierr)
 
          implicit none
         
-         class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(hdf5file), intent(in) :: file
          real, dimension(:,:), intent(in) :: fd
@@ -1252,11 +1246,10 @@
                         
       end subroutine wfield_2d_pipe
 !
-      subroutine pwpart_2d(pp,perr,file,part,npp,dspl,delta,ierr)
+      subroutine pwpart_2d(pp,file,part,npp,dspl,delta,ierr)
      
          implicit none
 
-         class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(hdf5file), intent(in) :: file
          real, dimension(:,:), intent(in) :: part
@@ -1425,12 +1418,11 @@
          
       end subroutine pwpart_2d
 !
-      subroutine pwpart_3d_pipe(pp,perr,file,part,npp,dspl,delta,origin,rtag,stag,&
+      subroutine pwpart_3d_pipe(pp,file,part,npp,dspl,delta,origin,rtag,stag,&
       &id,ierr)
      
          implicit none
 
-         class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(hdf5file), intent(in) :: file
          real, dimension(:,:), intent(in) :: part
@@ -1708,11 +1700,10 @@
       end subroutine pwpart_3d_pipe
 !
 !
-      subroutine wpart(pp,perr,file,part,npp,dspl,ierr)
+      subroutine wpart(pp,file,part,npp,dspl,ierr)
      
          implicit none
 
-         class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(hdf5file), intent(in) :: file
          real, dimension(:,:), intent(in) :: part
@@ -1772,11 +1763,10 @@
          
       end subroutine wpart
 !
-      subroutine rpart(pp,perr,file,part,npp,ierr)
+      subroutine rpart(pp,file,part,npp,ierr)
      
          implicit none
 
-         class(perrors), intent(in), pointer :: perr
          class(parallel_pipe), intent(in), pointer :: pp
          class(hdf5file), intent(in) :: file
          real, dimension(:,:), intent(inout) :: part
